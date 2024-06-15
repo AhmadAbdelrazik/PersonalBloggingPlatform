@@ -1,12 +1,13 @@
 const statusCodes = require('../utils/statusCodes');
 
 const id = function (req, res, next, id) {
-  if (typeof id === "number") {
-    req.id = id;  
-    next();
-  }
-  else
+  if (isNaN(id)) {
     res.status(statusCodes.clientError.BadRequest).send(`invalid id`);
+    return ;
+  }
+
+  req.id = id;  
+  next();
 }
 
 module.exports = {

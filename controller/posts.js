@@ -2,6 +2,15 @@ const Post = require('../Model/post');
 const statusCodes = require('../utils/statusCodes');
 
 const  addPost = async function (req, res) {
+  // Check if post already exists.
+  const checkPost = await Post.findOne({title: req.body.title, author: req.body.author});
+
+  if (checkPost) {
+    console.log(checkPost);
+    res.status(statusCodes.clientError.Forbidden).send(`Post already exists`);
+    return ;
+  }
+
   // Add the post to the database.
   const date = new Date();
   const id = await Post.countDocuments();
@@ -22,7 +31,7 @@ const  addPost = async function (req, res) {
 
 const readPost = async function (req, res) {
   // Check if the post in the database.
-  const post = await Post.findOne({id: req.id});
+  const post = await Post.findOne({id: req.id}, {_id: 0, __v: 0});
 
   if (!post) {
     res.status(statusCodes.clientError.NotFound);
@@ -35,7 +44,7 @@ const readPost = async function (req, res) {
 
 const readPosts = async function (req, res) {
   // Load the last added posts from the database.
-  const post = await Post.find().sort({publishDate: 1}).limit(10);
+  const post = await Post.find({}, {_id: 0, __v: 0}).sort({publishDate: 1}).limit(10);
   
   // Send posts to the user.
   if (post) {
@@ -46,15 +55,27 @@ const readPosts = async function (req, res) {
 }
 
 const changePost = async function (req, res) {
-  // Check if the post is in the database.
-  // Update the post
+  // Check if post is in the database and update it if found.
+  const checkPost = await Post.findOneAndUpdate({id: req.id}, req.body);
+
+  if (!checkPost) {
+    res.status(statusCodes.clientError.NotFound).send(`Post doesn't exists`);
+    return ;
+  }
   // Send the confirmation or error
+  res.status(statusCodes.success.Accepted).send(`Post ${req.id} has been updated`);
 }
 
 const deletePost = async function (req, res) {
-  // Check if the post is in the database.
-  // Delete the post from the database.
+  // Check if the post is in the database and deletes it if found.
+  const checkPost = await Post.findOneAndDelete({title: req.body.title, author: req.body.author});
+
+  if (!checkPost) {
+    res.status(statusCodes.clientError.NotFound).send(`Post doesn't exists`);
+    return ;
+  }
   // Send the confirmation or error
+  res.status(statusCodes.success.Accepted).send(`Post ${req.id} has been deleted`);
 }
 
 module.exports = {
