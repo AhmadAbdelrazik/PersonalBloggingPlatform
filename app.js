@@ -17,4 +17,12 @@ app.use(express.urlencoded({extended: true}));
 
 app.use('/', postRouter);
 
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    console.error('Bad JSON');
+    return res.status(400).json({ error: 'Invalid JSON format' });
+  }
+  next();
+});
+
 app.listen(port, _ => console.log(`Started listening at ${port}`))

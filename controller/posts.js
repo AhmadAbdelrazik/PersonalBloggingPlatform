@@ -15,7 +15,7 @@ const  addPost = async function (req, res) {
   // Add the post to the database.
   const date = new Date();
   const meta = await Meta.findOne();
-  meta.postId++;
+  meta.postId = meta.postId + 1;
   const id = meta.postId;
   const post = new Post({
     id: id,
@@ -58,6 +58,7 @@ const readPosts = async function (req, res) {
 }
 
 const changePost = async function (req, res) {
+  req.body.lastEdit = new Date();
   // Check if post is in the database and update it if found.
   const checkPost = await Post.findOneAndUpdate({id: req.id}, req.body);
 

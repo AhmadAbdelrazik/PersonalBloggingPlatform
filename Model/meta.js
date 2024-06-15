@@ -4,6 +4,6 @@ const metaSchema = new mongoose.Schema({
   postId: Number
 })
 
-const Meta = mongoose.model('Meta', metaSchema);
+const Meta = mongoose.model('meta', metaSchema);
 
 module.exports = Meta;
