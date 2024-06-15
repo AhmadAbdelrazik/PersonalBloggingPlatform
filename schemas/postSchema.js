@@ -1,4 +1,7 @@
-module.exports = {
+const Ajv = require('ajv');
+const ajv = new Ajv();
+
+const postSchema = {
   type: "object",
   properties: {
     title: 
@@ -17,3 +20,7 @@ module.exports = {
     }
   },
 };
+
+const validate = ajv.compile(postSchema);
+
+module.exports = validate;

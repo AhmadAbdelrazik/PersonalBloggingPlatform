@@ -22,7 +22,7 @@ const  addPost = async function (req, res) {
 
 const readPost = async function (req, res) {
   // Check if the post in the database.
-   
+  
   // Send the post to the database.
 }
 
