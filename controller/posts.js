@@ -22,13 +22,27 @@ const  addPost = async function (req, res) {
 
 const readPost = async function (req, res) {
   // Check if the post in the database.
+  const post = await Post.findOne({id: req.id});
+
+  if (!post) {
+    res.status(statusCodes.clientError.NotFound);
+    return;
+  }
   
-  // Send the post to the database.
+  // Send the post to the user.
+  res.send(post);
 }
 
 const readPosts = async function (req, res) {
   // Load the last added posts from the database.
-  // Send posts to the database.
+  const post = await Post.find().sort({publishDate: 1}).limit(10);
+  
+  // Send posts to the user.
+  if (post) {
+    res.send(post);
+  } else {
+    res.send(`no Posts yet! `);
+  }
 }
 
 const changePost = async function (req, res) {
