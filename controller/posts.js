@@ -1,4 +1,5 @@
 const Post = require('../Model/post');
+const Meta = require('../Model/meta');
 const statusCodes = require('../utils/statusCodes');
 
 const  addPost = async function (req, res) {
@@ -13,10 +14,11 @@ const  addPost = async function (req, res) {
 
   // Add the post to the database.
   const date = new Date();
-  const id = await Post.countDocuments();
-  
+  const meta = await Meta.findOne();
+  meta.postId++;
+  const id = meta.postId;
   const post = new Post({
-    id: id + 1,
+    id: id,
     title: req.body.title,
     author: req.body.author,
     post: req.body.post,
@@ -24,9 +26,10 @@ const  addPost = async function (req, res) {
   });
   
   await post.save();
+  await meta.save();
+  
   // Send the post id back.
-
-  res.status(statusCodes.success.Accepted).send(`Post Id = ${id + 1}`);
+  res.status(statusCodes.success.Accepted).send(`Post Id = ${id}`);
 }
 
 const readPost = async function (req, res) {
@@ -44,7 +47,7 @@ const readPost = async function (req, res) {
 
 const readPosts = async function (req, res) {
   // Load the last added posts from the database.
-  const post = await Post.find({}, {_id: 0, __v: 0}).sort({publishDate: 1}).limit(10);
+  const post = await Post.find({}, {_id: 0, __v: 0}).sort({publishDate: -1}).limit(10);
   
   // Send posts to the user.
   if (post) {
