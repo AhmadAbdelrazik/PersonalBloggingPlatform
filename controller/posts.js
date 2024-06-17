@@ -1,16 +1,14 @@
 const Post = require('../Model/post');
 const Meta = require('../Model/meta');
 const statusCodes = require('../utils/statusCodes');
+const { NotFoundError, ForbiddenError } = require('../utils/baseError');
 
 const  addPost = async function (req, res) {
   // Check if post already exists.
   const checkPost = await Post.findOne({title: req.body.title, author: req.body.author});
 
-  if (checkPost) {
-    console.log(checkPost);
-    res.status(statusCodes.clientError.Forbidden).send(`Post already exists`);
-    return ;
-  }
+  if (checkPost)
+    throw new ForbiddenError(`Post already Exists`);
 
   // Add the post to the database.
   const date = new Date();
@@ -35,11 +33,10 @@ const  addPost = async function (req, res) {
 const readPost = async function (req, res) {
   // Check if the post in the database.
   const post = await Post.findOne({id: req.id}, {_id: 0, __v: 0});
+  console.log(post);
 
-  if (!post) {
-    res.status(statusCodes.clientError.NotFound);
-    return;
-  }
+  if (!post)
+    throw new NotFoundError(`Post with ID ${req.id} doesn't exist.`);
   
   // Send the post to the user.
   res.send(post);
@@ -62,23 +59,21 @@ const changePost = async function (req, res) {
   // Check if post is in the database and update it if found.
   const checkPost = await Post.findOneAndUpdate({id: req.id}, req.body);
 
-  if (!checkPost) {
-    res.status(statusCodes.clientError.NotFound).send(`Post doesn't exists`);
-    return ;
-  }
-  // Send the confirmation or error
+  if (!checkPost) 
+    throw new NotFoundError(`Post with ID ${req.id} doesn't exist`);
+
+  // Send the confirmation
   res.status(statusCodes.success.Accepted).send(`Post ${req.id} has been updated`);
 }
 
 const deletePost = async function (req, res) {
   // Check if the post is in the database and deletes it if found.
-  const checkPost = await Post.findOneAndDelete({title: req.body.title, author: req.body.author});
+  const checkPost = await Post.findOneAndDelete({id: req.id});
 
-  if (!checkPost) {
-    res.status(statusCodes.clientError.NotFound).send(`Post doesn't exists`);
-    return ;
-  }
-  // Send the confirmation or error
+  if (!checkPost) 
+    throw new NotFoundError(`Post with ID ${req.id} doesn't exist`);
+
+  // Send the confirmation
   res.status(statusCodes.success.Accepted).send(`Post ${req.id} has been deleted`);
 }
 
