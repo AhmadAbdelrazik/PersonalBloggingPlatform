@@ -7,7 +7,9 @@ const errorHandler = require('./Middleware/errorHandler');
 const postRouter = require('./router/posts');
 
 async function connect(db) {
-  await mongoose.connect(`mongodb://127.0.0.1:27017/${db}`);
+  await mongoose.connect(`mongodb://127.0.0.1:27017/${db}`).catch((err) => {
+    console.log(err);
+  });
   console.log('Connected Successfully');
 }
 
