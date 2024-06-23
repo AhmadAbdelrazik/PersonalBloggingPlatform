@@ -1,4 +1,4 @@
-# Project Name
+# Personal Blogging Platform
 
 This project is an API for managing posts, built using Node.js and Express. It provides CRUD (Create, Read, Update, Delete) operations for posts. The main route handles all the necessary endpoints to interact with the posts.
 
